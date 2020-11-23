@@ -23,11 +23,17 @@ class RewardPredictor(nn.Module):
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.base.parameters(), lr=3e-4)
 
-    def forward(self):
-        pass
+    def forward(self, s1, s2):
+        """
+            Given 2 segments we train the network based on the preference of the user.
+        """
+        raise NotImplemented
 
     def reward(self):
-        pass
+        raise NotImplemented
+
+    def __str__(self):
+        return 'Reward Predictor'
 
 
 class MLPBase(nn.Module):
@@ -101,7 +107,3 @@ class CNNBase(nn.Module):
 
     def __str__(self):
         return 'CNN'
-
-
-if __name__ == '__main__':
-    r = RewardPredictor(4, CNNBase)
