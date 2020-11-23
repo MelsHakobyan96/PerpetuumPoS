@@ -1,5 +1,6 @@
 import torch.nn as nn
-from torch.nn import Conv2d, BatchNorm2d, LeakyReLU, Dropout2d, Linear, ReLU
+from torch import optim
+from torch.nn import Conv2d, BatchNorm2d, LeakyReLU, Dropout2d, Linear
 
 
 class Flatten(nn.Module):
@@ -8,8 +9,19 @@ class Flatten(nn.Module):
 
 
 class RewardPredictor(nn.Module):
-    def __init__(self):
+    def __init__(self, num_inputs, base, base_kwargs=None):
+        """
+            Uses the base function (CNN or MLP) to train the predictor.
+        """
         super(RewardPredictor, self).__init__()
+        if base_kwargs is None:
+            base_kwargs = {}
+
+        self.base = base(num_inputs, **base_kwargs)
+        self.softmax = nn.Softmax(dim=1)
+
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = optim.Adam(self.base.parameters(), lr=3e-4)
 
     def forward(self):
         pass
@@ -40,6 +52,9 @@ class MLPBase(nn.Module):
     def forward(self, inputs):
         x = self.layers(inputs)
         return self.critic_linear(x)
+
+    def __str__(self):
+        return 'MLP'
 
 
 class CNNBase(nn.Module):
@@ -83,3 +98,10 @@ class CNNBase(nn.Module):
     def forward(self, inputs):
         x = self.layers(inputs / 255.0)
         return self.critic_linear(x)
+
+    def __str__(self):
+        return 'CNN'
+
+
+if __name__ == '__main__':
+    r = RewardPredictor(4, CNNBase)
