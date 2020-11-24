@@ -9,15 +9,14 @@ class Flatten(nn.Module):
 
 
 class RewardPredictor(nn.Module):
-    def __init__(self, cnn_input_size, nn_input_size, output_size, base, base_kwargs=None):
+    def __init__(self, input_size):
         """
             Uses the base function (CNN or MLP) to train the predictor.
         """
         super(RewardPredictor, self).__init__()
-        self.cnn_layer = CNNBase(cnn_input_size)
-        self.mlp_layer = MLPBase(nn_input_size)
-
-        self.last_layer = LastNNLayer(output_size)
+        self.cnn_layer = CNNBase(input_size)
+        self.mlp_layer = MLPBase(input_size)
+        self.last_layer = LastNNLayer(input_size)
 
     def forward(self, s1, s2, data):
         """
@@ -34,13 +33,10 @@ class RewardPredictor(nn.Module):
         #  Raise error if the input shapes do not match
         assert cnn_output.shape == mlp_output.shape
 
-        last_layer_input = torch.cat((cnn_output, mlp_output), dim=0)
+        last_layer_input = torch.cat((cnn_output, mlp_output), dim=1)
         last_layer_output = self.last_layer.forward(last_layer_input)
 
         return last_layer_output
-
-    def reward(self):
-        raise NotImplemented
 
     def __str__(self):
         return 'Reward Predictor'
