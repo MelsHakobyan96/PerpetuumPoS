@@ -1,6 +1,6 @@
+import torch
 import torch.nn as nn
-from torch import optim
-from torch.nn import Conv2d, BatchNorm2d, LeakyReLU, Dropout2d, Linear
+from torch.nn import Conv2d, BatchNorm2d, LeakyReLU, Dropout2d, Linear, ReLU
 
 
 class Flatten(nn.Module):
@@ -9,25 +9,35 @@ class Flatten(nn.Module):
 
 
 class RewardPredictor(nn.Module):
-    def __init__(self, num_inputs, base, base_kwargs=None):
+    def __init__(self, cnn_input_size, nn_input_size, output_size, base, base_kwargs=None):
         """
             Uses the base function (CNN or MLP) to train the predictor.
         """
         super(RewardPredictor, self).__init__()
-        if base_kwargs is None:
-            base_kwargs = {}
+        self.cnn_layer = CNNBase(cnn_input_size)
+        self.mlp_layer = MLPBase(nn_input_size)
 
-        self.base = base(num_inputs, **base_kwargs)
-        self.softmax = nn.Softmax(dim=1)
+        self.last_layer = LastNNLayer(output_size)
 
-        self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = optim.Adam(self.base.parameters(), lr=3e-4)
-
-    def forward(self, s1, s2):
+    def forward(self, s1, s2, data):
         """
             Given 2 segments we train the network based on the preference of the user.
         """
-        raise NotImplemented
+        # Raise error if the input shapes do not match
+        assert s1.shape == s2.shape
+
+        cnn_input = torch.cat((s1, s2), dim=0)
+        cnn_output = self.cnn_layer.forward(cnn_input)
+
+        mlp_output = self.mlp_layer.forward(data)
+
+        #  Raise error if the input shapes do not match
+        assert cnn_output.shape == mlp_output.shape
+
+        last_layer_input = torch.cat((cnn_output, mlp_output), dim=0)
+        last_layer_output = self.last_layer.forward(last_layer_input)
+
+        return last_layer_output
 
     def reward(self):
         raise NotImplemented
@@ -37,7 +47,7 @@ class RewardPredictor(nn.Module):
 
 
 class MLPBase(nn.Module):
-    def __init__(self, num_inputs, hidden_size=64):
+    def __init__(self, num_inputs, hidden_size=1024, output_size=576):
         """
             The input in the paper for Simulated Robotics Tasks.
             Copied the architecture for now.
@@ -53,7 +63,7 @@ class MLPBase(nn.Module):
             LeakyReLU(0.01, inplace=True),
         )
 
-        self.critic_linear = nn.Linear(hidden_size, 1)
+        self.critic_linear = nn.Linear(hidden_size, output_size)
 
     def forward(self, inputs):
         x = self.layers(inputs)
@@ -107,3 +117,25 @@ class CNNBase(nn.Module):
 
     def __str__(self):
         return 'CNN'
+
+
+class LastNNLayer(nn.Module):
+    def __init__(self, num_inputs, hidden_size=512, output_size=1):
+        """
+            A layer to take the concatenated output vectors and produce a prediction.
+        """
+        super(LastNNLayer, self).__init__()
+
+        self.layers = nn.Sequential(
+            Linear(num_inputs, hidden_size),
+            ReLU(),
+        )
+
+        self.critic_linear = nn.Linear(hidden_size, output_size)
+
+    def forward(self, inputs):
+        x = self.layers(inputs)
+        return self.critic_linear(x)
+
+    def __str__(self):
+        return 'Prediction Layer'
