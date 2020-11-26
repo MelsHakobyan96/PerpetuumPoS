@@ -53,7 +53,7 @@ class MLPBase(nn.Module):
         super(MLPBase, self).__init__()
 
         self.layers = nn.Sequential(
-            Linear(num_inputs ** 2, hidden_size),
+            Linear(num_inputs, hidden_size),
             LeakyReLU(0.01, inplace=True),
 
             Linear(hidden_size, hidden_size),
@@ -63,7 +63,6 @@ class MLPBase(nn.Module):
         self.critic_linear = nn.Linear(hidden_size, output_size)
 
     def forward(self, inputs):
-        inputs = torch.flatten(inputs, 1, 2)
         x = self.layers(inputs)
         return self.critic_linear(x)
 

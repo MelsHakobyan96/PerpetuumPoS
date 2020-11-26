@@ -1,8 +1,9 @@
-from operator import itemgetter
+import json
 
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+from train import train
 
 
 class RewardDataset(Dataset):
@@ -15,28 +16,12 @@ class RewardDataset(Dataset):
 
     @staticmethod
     def preprocess(data):
-        # TODO
-        # Add encodings for categorical variables
-        def _check(x):
-            return isinstance(x, bool)
+        def _flatten(array):
+            return array.flatten()
 
-        def _pad(x, max_len):
-            return np.pad(x, (0, max_len), 'constant')
-
-        # Flattening the matrix
-        data['vehicle_positions'] = data['vehicle_positions'].flatten()
-
-        # Getting the numpy arrays from the dictionary
-        num_keys = [x for x, y in data.items() if _check(y) is False]
-        num_arrays = itemgetter(*num_keys)(data)
-
-        # Getting the maximum length of the numpy arrays
-        max_length = max(list(map(lambda x: len(x), num_arrays)))
-
-        # Padding with zeroes of match the max length
-        padded = [_pad(x, max_length - len(x)) for x in num_arrays]
-
-        return padded
+        arrays = [_flatten(torch.tensor(val)) for val in data.values()]
+        arrays = torch.cat(arrays)
+        return _flatten(arrays)
 
     def __len__(self):
         return self.s1.shape[0]
@@ -52,3 +37,15 @@ def collate_fn(batch):
     data = [item[0] for item in batch]
     target = [item[1] for item in batch]
     return torch.tensor(data), torch.tensor(target)
+
+
+if __name__ == '__main__':
+    json_file_path = './data/test.json'
+
+    with open(json_file_path, 'r') as j:
+        d = json.loads(j.read())
+
+    arr = np.expand_dims(np.zeros((3, 85, 85)), axis=0)
+    target = [0, 1]
+    rd = RewardDataset(arr, arr, d, target)
+    train(rd, 1, lr=3e-4)
