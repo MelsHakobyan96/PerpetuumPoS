@@ -9,14 +9,13 @@ class Flatten(nn.Module):
 
 
 class RewardPredictor(nn.Module):
-    def __init__(self, cnn_input, mlp_input, ll_input):
+    def __init__(self, cnn_input, mlp_input):
         """
             Uses the base function (CNN or MLP) to train the predictor.
         """
         super(RewardPredictor, self).__init__()
         self.cnn_layer = CNNBase(cnn_input)
         self.mlp_layer = MLPBase(mlp_input)
-        self.last_layer = LastNNLayer(ll_input)
 
     def forward(self, s1, s2, data):
         """
@@ -29,15 +28,19 @@ class RewardPredictor(nn.Module):
         cnn_output = self.cnn_layer.forward(cnn_input)
 
         data = data.float()
-        mlp_output = self.mlp_layer.forward(data)
+        mlp_output = torch.squeeze(self.mlp_layer.forward(data))
 
         #  Raise error if the input shapes do not match
-        assert cnn_output.shape[1] == mlp_output.shape[1]
+        assert cnn_output.shape == mlp_output.shape
 
-        last_layer_input = torch.cat((cnn_output, mlp_output), dim=0)
+        last_layer_input = torch.cat((cnn_output, mlp_output), dim=1)
+        ll_input_shape = last_layer_input.shape[1]
+
+        # Initializing the last layer
+        self.last_layer = LastNNLayer(ll_input_shape)
         last_layer_output = self.last_layer.forward(last_layer_input)
 
-        return last_layer_output
+        return torch.sigmoid(last_layer_output)
 
     def __str__(self):
         return 'Reward Predictor'
@@ -132,7 +135,6 @@ class LastNNLayer(nn.Module):
         self.critic_linear = nn.Linear(hidden_size, output_size)
 
     def forward(self, inputs):
-        inputs = torch.unsqueeze(torch.flatten(inputs, 0, 1), dim=1)
         x = self.layers(inputs)
         return self.critic_linear(x)
 
