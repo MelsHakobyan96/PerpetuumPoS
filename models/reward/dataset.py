@@ -1,5 +1,6 @@
 import json
-
+import gzip
+import pickle
 import numpy as np
 import torch
 from torch.utils.data import Dataset
@@ -41,13 +42,22 @@ def collate_fn(batch):
     return torch.tensor(data), torch.tensor(target)
 
 
+def unpickle(path='./data/test.pickle'):
+    with gzip.open(path, 'r') as fin:
+        data = pickle.load(fin)
+    return data
+
+
+def read_json(path='./data/test.json'):
+    with open(path, 'r') as j:
+        data = json.loads(j.read())
+
+    return data
+
 if __name__ == '__main__':
-    json_file_path = './data/test.json'
-
-    with open(json_file_path, 'r') as j:
-        d = json.loads(j.read())
-
-    arr = np.expand_dims(np.zeros((3, 85, 85)), axis=0)
-    target = [0, 1]
-    rd = RewardDataset(arr, arr, d, target)
-    train(rd, 1, lr=3e-4)
+    data = unpickle()
+    print(data)
+    # arr = np.expand_dims(np.zeros((3, 85, 85)), axis=0)
+    # target = [0, 1]
+    # rd = RewardDataset(arr, arr, d, target)
+    # train(rd, 1, lr=3e-4)
