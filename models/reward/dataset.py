@@ -42,8 +42,8 @@ def collate_fn(batch):
     return torch.tensor(data), torch.tensor(target)
 
 
-def unpickle(path='./data/test.pickle'):
-    with gzip.open(path, 'r') as fin:
+def unpickle(path='/home/msi/ML_projects/PerpetuumPoS/data/test.pickle'):
+    with open(path, 'rb') as fin:
         data = pickle.load(fin)
     return data
 
