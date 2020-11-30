@@ -1,5 +1,4 @@
 import json
-import gzip
 import pickle
 import numpy as np
 import torch
@@ -42,7 +41,7 @@ def collate_fn(batch):
     return torch.tensor(data), torch.tensor(target)
 
 
-def unpickle(path='/home/msi/ML_projects/PerpetuumPoS/data/test.pickle'):
+def unpickle(path='./data/test.pickle'):
     with open(path, 'rb') as fin:
         data = pickle.load(fin)
     return data
