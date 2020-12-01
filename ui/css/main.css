@@ -1,0 +1,46 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,800,700);
+
+html,
+body {
+	height: 100%;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 22px;
+	margin: 0;
+}
+
+h1 {
+		text-transform: uppercase;
+		font-size: 72px;
+}
+
+.btn {
+	display: inline-block;
+	font-size: 18px;
+	background: #fff;
+	color: #2a2a2a;
+	cursor: pointer;
+	padding: 17px 20px;
+	position: relative;
+  border-radius: 4px;
+	min-width: 110px;
+}
+
+.btn:hover {
+	color: #42A5F5;
+}
+
+.level {
+	position: relative;
+	padding: 50px 0 30px;
+	text-align: center;
+	background-image: url("../img/frame-1.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	color: #fff;
+	height: 100%;
+}
+
+.segment {
+	width: 500px;
+	height: 500px;
+}
