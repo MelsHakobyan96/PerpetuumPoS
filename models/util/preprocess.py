@@ -33,7 +33,7 @@ def read_txt(path='./data/keys.txt'):
 def image_preprocess(image):
     image += np.mean(image)
     image = image.astype(np.uint8)
-    return np.expand_dims(image, axis=0)
+    return image
 
 
 def preprocess(episode, keys=None):

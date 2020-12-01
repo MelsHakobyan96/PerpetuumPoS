@@ -23,7 +23,7 @@ class RewardDataset(Dataset):
         return torch.stack(output, dim=0)
 
     def __len__(self):
-        return self.s1.shape[0]
+        return self.s1.shape[2]
 
     def __getitem__(self, index):
-        return self.s1[index], self.s2[index], self.data, torch.tensor(self.target)
+        return self.s1, self.s2, self.data, torch.tensor(self.target)

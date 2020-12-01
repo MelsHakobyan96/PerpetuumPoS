@@ -23,8 +23,7 @@ class RewardPredictor(nn.Module):
         """
         # Raise error if the input shapes do not match
         assert s1.shape == s2.shape
-
-        cnn_input = torch.cat((s1, s2), dim=0).float()
+        cnn_input = torch.squeeze(torch.cat((s1, s2), dim=3)).float()
         cnn_output = self.cnn_layer.forward(cnn_input)
 
         data = data.float()
