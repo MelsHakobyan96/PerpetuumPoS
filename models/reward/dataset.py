@@ -1,9 +1,5 @@
-import json
-import pickle
-import numpy as np
 import torch
 from torch.utils.data import Dataset
-from train import train
 
 
 class RewardDataset(Dataset):
@@ -18,6 +14,7 @@ class RewardDataset(Dataset):
     def preprocess(data):
         def _flatten(array):
             return array.flatten()
+
         output = []
         for val_dict in data:
             arrays = [_flatten(torch.tensor(val)) for val in val_dict.values()]
@@ -29,34 +26,4 @@ class RewardDataset(Dataset):
         return self.s1.shape[0]
 
     def __getitem__(self, index):
-        return (torch.tensor(self.s1[index]),
-                torch.tensor(self.s2[index]),
-                torch.tensor(self.data),
-                torch.tensor(self.target))
-
-
-def collate_fn(batch):
-    data = [item[0] for item in batch]
-    target = [item[1] for item in batch]
-    return torch.tensor(data), torch.tensor(target)
-
-
-def unpickle(path='./data/test.pickle'):
-    with open(path, 'rb') as fin:
-        data = pickle.load(fin)
-    return data
-
-
-def read_json(path='./data/test.json'):
-    with open(path, 'r') as j:
-        data = json.loads(j.read())
-
-    return data
-
-if __name__ == '__main__':
-    data = unpickle()
-    print(data)
-    # arr = np.expand_dims(np.zeros((3, 85, 85)), axis=0)
-    # target = [0, 1]
-    # rd = RewardDataset(arr, arr, d, target)
-    # train(rd, 1, lr=3e-4)
+        return self.s1[index], self.s2[index], self.data, torch.tensor(self.target)

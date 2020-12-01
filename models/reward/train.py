@@ -1,5 +1,5 @@
 import torch
-from module import RewardPredictor
+from models.reward.module import RewardPredictor
 from torch.nn import BCELoss
 from torch.optim import Adam
 from torch.utils.data import DataLoader
