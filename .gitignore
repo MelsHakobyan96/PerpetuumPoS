@@ -139,5 +139,4 @@ cython_debug/
 
 #Pycharm
 /**/.idea/*
-data/.gitattributes
-data/test.pickle
+data/
