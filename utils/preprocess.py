@@ -39,6 +39,7 @@ def image_preprocess(image):
 def preprocess(episode, keys=None):
     data = episode['data']
     length = len(data)
+    images = []
     values = []
 
     for i in range(length):
@@ -49,9 +50,10 @@ def preprocess(episode, keys=None):
 
         # Getting the required data
         img_data = {key: val for key, val in d.items() if key in keys}
-        values.append((image, img_data))
+        images.append(image)
+        values.append(img_data)
 
-    return values
+    return images, values
 
 
 def flatten_nested_dicts(d):
@@ -72,3 +74,10 @@ def flatten_nested_dicts(d):
             items.append((new_key, v))
 
     return dict(items)
+
+
+def get_clean_data(path='./data/test1.pickle', keys=None):
+    data = unpickle(path)
+    values = preprocess(data, keys)
+
+    return values

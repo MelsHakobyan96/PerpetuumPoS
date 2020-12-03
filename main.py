@@ -1,15 +1,12 @@
 from models.reward.dataset import RewardDataset
 from models.reward.train import train
-from models.util.preprocess import *
+from utils.preprocess import *
 
 if __name__ == '__main__':
-    data = unpickle()
     keys = read_txt()
-    values = preprocess(data, keys)
+    images_1, data_1 = get_clean_data('./data/test1.pickle', keys)
+    images_2, data_2 = get_clean_data('./data/test2.pickle', keys)
 
-    arr_1 = values[0][0]
-    arr_2 = values[1][0]
-    d = [values[0][1], values[1][1]]
     target = [0, 1]
-    rd = RewardDataset(arr_1, arr_2, d, target)
-    train(rd, 1, lr=3e-4)
+    rd = RewardDataset(images_1, images_2, (data_1, data_2), target)
+    train(rd, 2, lr=3e-4)

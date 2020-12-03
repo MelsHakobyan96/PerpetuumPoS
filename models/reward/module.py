@@ -23,7 +23,8 @@ class RewardPredictor(nn.Module):
         """
         # Raise error if the input shapes do not match
         assert s1.shape == s2.shape
-        cnn_input = torch.squeeze(torch.cat((s1, s2), dim=3)).float()
+
+        cnn_input = torch.cat((s1, s2), dim=0).float()
         cnn_output = self.cnn_layer.forward(cnn_input)
 
         data = data.float()
@@ -84,34 +85,37 @@ class CNNBase(nn.Module):
         self.num_inputs = num_inputs
 
         self.layers = nn.Sequential(
-            Conv2d(self.num_inputs, 16, kernel_size=7, stride=3),
+            Conv2d(6, 16, kernel_size=5, stride=3),
             BatchNorm2d(16),
             Dropout2d(p=0.5),
             LeakyReLU(0.01, inplace=True),
 
-            Conv2d(16, 16, kernel_size=5, stride=2),
+            Conv2d(16, 16, kernel_size=3, stride=2),
             BatchNorm2d(16),
             Dropout2d(p=0.5),
             LeakyReLU(0.01, inplace=True),
 
-            Conv2d(16, 16, kernel_size=3, stride=1),
+            Conv2d(16, 16, kernel_size=3, stride=2),
             BatchNorm2d(16),
             Dropout2d(p=0.5),
             LeakyReLU(0.01, inplace=True),
-
+            #
             Conv2d(16, 16, kernel_size=3, stride=1),
             BatchNorm2d(16),
             Dropout2d(p=0.5),
             LeakyReLU(0.01, inplace=True),
 
             Flatten(),
-            Linear(16 * 8 * 8, self.hidden_size)
+            Linear(16 * 16 * 16, self.hidden_size)
         )
 
         # self.critic_linear = nn.Linear(hidden_size, 1)
+        # self.test = Conv2d(12, 16, kernel_size=5, stride=3)
 
     def forward(self, inputs):
-        # inputs = inputs / 255
+        inputs = inputs / 255
+        inp_shape = inputs.shape[1]
+        inputs = inputs.reshape(2, -1, inp_shape, inp_shape)
         x = self.layers(inputs)
         return x
 
