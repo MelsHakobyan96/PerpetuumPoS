@@ -123,7 +123,7 @@ class PPO_model(nn.Module):
 		CNN_out = self.CNN(image)
 		MLP_out = self.MLP(meta_data)
 
-		PPO_input = torch.cat((CNN_out, MLP_out)).view(image.size()[0], 1, -1)
+		PPO_input = torch.cat((CNN_out, MLP_out)).view(image.size()[0], -1)
 
 		layer1_out = self.layer1(self.tanh(PPO_input))
 		layer2_out = self.layer2(self.tanh(layer1_out))
@@ -153,11 +153,11 @@ class PPO_model(nn.Module):
 		return (policy_mean_out, policy_var_out), value_layer5_out
 
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-# model = PPO_model(height=227, width=227, in_channels=3, out_channels=6, kernel_size=4, mlp_input_size=8, action_size=2).to(device)
+model = PPO_model(height=227, width=227, in_channels=3, out_channels=6, kernel_size=4, mlp_input_size=8, action_size=2).to(device)
 
-# image = torch.zeros((8, 3, 227, 227)).to(device)
-# meta = torch.zeros((8, 8)).to(device)
+image = torch.zeros((8, 3, 227, 227)).to(device)
+meta = torch.zeros((8, 8)).to(device)
 
-# print(model.forward(image, meta))
+print(model.forward(image, meta))
