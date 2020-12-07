@@ -24,7 +24,7 @@ def train(train_db, batch_size, device=None, lr=3e-4, save=False, path='./logs/m
         optimizer.zero_grad()
         target = target[0].unsqueeze(0).T
 
-        predictions = model(s1.to(device), s2.to(device), data.to(device))
+        predictions, reward = model(s1.to(device), s2.to(device), data.to(device))
         loss = criterion(predictions, target.to(device))
 
         loss.backward()

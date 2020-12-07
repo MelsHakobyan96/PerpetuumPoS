@@ -16,6 +16,7 @@ class RewardPredictor(nn.Module):
         super(RewardPredictor, self).__init__()
         self.cnn_layer = CNNBase(cnn_input)
         self.mlp_layer = MLPBase(mlp_input)
+        self.reward = None
 
     def forward(self, s1, s2, data):
         """
@@ -40,7 +41,9 @@ class RewardPredictor(nn.Module):
         self.last_layer = LastNNLayer(ll_input_shape)
         last_layer_output = self.last_layer.forward(last_layer_input)
 
-        return torch.sigmoid(last_layer_output)
+        self.reward = last_layer_output
+
+        return torch.sigmoid(last_layer_output), self.reward
 
     def __str__(self):
         return 'Reward Predictor'
