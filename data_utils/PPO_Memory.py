@@ -22,4 +22,4 @@ class PPO_Memory(Dataset):
         return len(self.images)
 
     def __getitem__(self, index):
-        return torch.FloatTensor(self.actions[index]), torch.FloatTensor(self.images[index]), torch.FloatTensor(self.meta_data[index]), torch.FloatTensor(self.logprobs[index])
+        return torch.FloatTensor(self.actions[index]), torch.FloatTensor(self.images[index]), torch.FloatTensor(self.meta_data[index]), torch.FloatTensor(self.logprobs[index]), torch.FloatTensor(self.state_values[index])

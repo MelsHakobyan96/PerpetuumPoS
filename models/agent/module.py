@@ -8,7 +8,7 @@ class Flatten(nn.Module):
 
 class CNN_base(nn.Module):
 
-	def __init__(self, height, width, in_channels, out_channels, kernel_size):
+	def __init__(self, height=227, width=227, in_channels=3, out_channels=6, kernel_size=4):
 		super(CNN_base, self).__init__()
 
 		self.height = height
@@ -62,7 +62,7 @@ class CNN_base(nn.Module):
 
 class MLP_base(nn.Module):
 
-	def __init__(self, n_inputs):
+	def __init__(self, n_inputs=14):
 		super(MLP_base, self).__init__()
 
 		self.tanh = nn.Tanh()
@@ -168,7 +168,7 @@ class PPO_model(nn.Module):
 		action_dist_params, state_value = self.forward(image, meta_data)
 		dist = Normal(action_dist_params[0], action_dist_params[1])
 		action = dist.sample()
-        action_logprob = dist.log_prob(action)
+		action_logprob = dist.log_prob(action)
 
 		memory.images.append(image)
 		memory.meta_data.append(meta_data)

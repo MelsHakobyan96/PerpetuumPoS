@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from models.reward.module import RewardPredictor
 
 
-def train(train_db, batch_size, device=None, lr=3e-4, save=False, path='./logs/model.pth'):
+def train(train_db, batch_size, device=None, lr=3e-4, save=False, path='./logs/reward/experiment_1.pth'):
     train_loader = DataLoader(
         train_db,
         batch_size=batch_size,

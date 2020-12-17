@@ -23,8 +23,8 @@ class RewardDataset(Dataset):
         for val_dict in data:
             val_dict = val_dict[:self.min_frame]
             for i in range(self.min_frame):
-                arrays = [_flatten(torch.tensor(val)) for val in val_dict[i].values()]
-                arrays = torch.cat(arrays)
+                arrays = [_flatten(torch.tensor(val, dtype=torch.float64)) for val in val_dict[i].values()]
+                arrays = torch.cat(tuple(arrays))
                 output.append(_flatten(arrays))
 
         output = torch.stack(output, dim=0)
