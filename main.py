@@ -33,6 +33,7 @@ if __name__ == '__main__':
 	pre_trained_agent_path=None
 	reward_pred_batch_size=32
 	reward_update_episode_count=10
+	agent_update_episode_count=6
 	total_episode_count=100
 
 	reward_model_save_path="./logs/reward/experiment_1.pth"
@@ -78,11 +79,11 @@ if __name__ == '__main__':
 
 	for i in range(total_episode_count):
 		state = env.reset()
+		
 		###########################################
 		# preprocess(state)      #
 		# returns flattened dictionary #
 		# takes the image and meta_data     #
-		# saves it somewhere for reward_predictor #
 		###########################################
 		while not done:
 			action = agent.select_action(image, meta_data, memory)
@@ -91,7 +92,6 @@ if __name__ == '__main__':
 			# state.preprocess()      #
 			# returns flattened dictionary #
 			# takes the image and meta_data     #
-			# saves it somewhere for reward_predictor #
 			# we should define where an episode starts and ends #
 			#####################################################
 
@@ -102,16 +102,17 @@ if __name__ == '__main__':
 
 			memory.is_terminal.append(done)
 
-		episode_count+=1
 		episodic_rewards = []
 
-		if episode_count%2 == 0:
+		if episode_count%agent_update_episode_count == 0:
 			agent.update(memory, path_write=agent_model_save_path)
 			memory.clear_memory()
 
 		if episode_count%reward_update_episode_count == 0:
-			# train_db needs to be in the right format
+			# train_db needs to be in the right format from buffer
 			train(data=train_db, batch_size=reward_pred_batch_size, device=None, lr=3e-4, save=False, path=reward_model_save_path)
+
+		episode_count+=1
 
 			
 
