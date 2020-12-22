@@ -106,11 +106,12 @@ if __name__ == '__main__':
 
         output = reward.predict.predict(
             rd_predict, model=reward_predictor, device=device)
-
+        # rewards are given only to (list_index % batch_size == 0) frames, add 0 to the rest of the list
         episodic_rewards.extend(output)
 
         # TODO:
         # give episodic_rewards to MC_calculator and append the result to memory as state_values
+        memory.state_values.extend(ppo.MC_calculator(episodic_rewards))
 
     if episode_count % agent_update_episode_count == 0:
         agent.update(memory, path_write=agent_model_save_path)
