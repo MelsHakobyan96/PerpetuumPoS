@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 
 
 class RewardDataset(Dataset):
-    def __init__(self, s1, s2, data, label):
+    def __init__(self, s1, s2, data, label=None):
         def _min_frame(s1, s2):
             return min(len(s1), len(s2))
 
@@ -37,4 +37,7 @@ class RewardDataset(Dataset):
         return self.s1.shape[0]
 
     def __getitem__(self, index):
+        if self.target is None:
+            return self.s1[index], self.s2[index], self.data[index]
+
         return self.s1[index], self.s2[index], self.data[index], torch.Tensor(self.target)

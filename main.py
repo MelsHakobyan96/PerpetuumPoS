@@ -1,5 +1,5 @@
 from models.reward.module import RewardPredictor
-from models.reward.train import train
+from models import reward
 from models.reward.predict import predict
 from utils.functions import *
 from models.agent.algorithm import PPO
@@ -25,6 +25,7 @@ if __name__ == '__main__':
     reward_pred_batch_size = 32
     reward_update_episode_count = 10
     agent_update_episode_count = 6
+    give_rewards_episode_count = 2
     total_episode_count = 100
 
     reward_model_save_path = "./logs/reward/experiment_1.pth"
@@ -77,30 +78,15 @@ if __name__ == '__main__':
         state = env.reset()
 
         image, meta_data = preprocess(state, keys)
-        ###########################################
-        # preprocess(state)      #
-        # returns flattened dictionary #
-        # takes the image and meta_data     #
-        ###########################################
 
         while not done:
             action = agent.select_action(image, meta_data, memory)
             state, env_reward, done, _ = env.step(action)
 
-            #####################################################
-            # state.preprocess()      #
-            # returns flattened dictionary #
-            # takes the image and meta_data     #
-            # we should define where an episode starts and ends #
-            #####################################################
             image, meta_data = preprocess(state, keys)
             episode_images.append(image)
             episode_meta_data.append(meta_data)
-
-        memory.is_terminal.append(done)
-
-        # reward_pred model predicts rewards in batches, so the full episode should be runned sequentially
-        # and give the appropriate reward for every batch, append values in episodic_rewards list and given to MC_calculator and append to memory as state_values
+            memory.is_terminal.append(done)
 
         if done:
             buffer_data = episode_meta_data.copy()
@@ -114,13 +100,26 @@ if __name__ == '__main__':
 
     episodic_rewards = []
 
+    if episode_count % give_rewards_episode_count == 0:
+        # get rewards for the episode_images
+        rd_predict = get_memory_episodes(memory)
+
+        output = reward.predict.predict(
+            rd_predict, model=reward_predictor, device=device)
+
+        episodic_rewards.extend(output)
+
+        # TODO:
+        # give episodic_rewards to MC_calculator and append the result to memory as state_values
+
     if episode_count % agent_update_episode_count == 0:
         agent.update(memory, path_write=agent_model_save_path)
         memory.clear_memory()
 
     if episode_count % reward_update_episode_count == 0:
-        rd = random_data()
-    train(data=rd, batch_size=reward_pred_batch_size,
-          device=None, lr=3e-4, save=False, path=reward_model_save_path)
+        # train the reward predictor
+        rd_train = random_data()
+        reward.train.train(data=rd_train, batch_size=reward_pred_batch_size,
+                           device=None, lr=3e-4, save=False, path=reward_model_save_path)
 
     episode_count += 1

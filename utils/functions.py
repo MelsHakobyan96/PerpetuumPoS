@@ -116,3 +116,14 @@ def random_data(path='./data/reward/'):
 
     rd = RewardDataset(images_1, images_2, (episode_1, episode_2), target)
     return rd
+
+
+def get_memory_episodes(memory):
+    ep_end_ind = memory.is_terminal.index(1)
+
+    episode_1, episode_2 = memory.meta_data[:
+                                            ep_end_ind], memory.meta_data[:ep_end_ind]
+    images_1, images_2 = memory.images[:ep_end_ind], memory.images[:ep_end_ind]
+
+    rd = RewardDataset(images_1, images_2, (episode_1, episode_2))
+    return rd
