@@ -31,10 +31,10 @@ class PPO:
 		def discounted_rewards(reward_list_slice):
 			gammas = np.zeros(len(reward_list_slice))
 			for i in range(len(gammas)):
-	    		gammas[i] = self.gamma**i
+				gammas[i] = self.gamma**i
 
-	    	discounted_rewards = gammas * np.array(reward_list_slice)
-	    	return discounted_rewards
+			discounted_rewards = gammas * np.array(reward_list_slice)
+			return discounted_rewards
 
 		for i, _ in enumerate(reward_list):
 			state_values.append(reward_list[i] + sum(discounted_rewards(reward_list[i+1:])))
