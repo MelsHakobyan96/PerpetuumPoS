@@ -2,10 +2,8 @@
 
 html,
 body {
-	height: 100%;
 	font-family: 'Open Sans', sans-serif;
-	font-size: 22px;
-	margin: 0;
+	margin: 0px;
 }
 
 h1 {
@@ -31,7 +29,7 @@ h1 {
 
 .level {
 	position: relative;
-	padding: 50px 0 30px;
+	padding: 1px 0 32px;
 	text-align: center;
 	background-image: url("../img/frame-1.jpg");
 	background-repeat: no-repeat;
@@ -43,4 +41,14 @@ h1 {
 .segment {
 	width: 500px;
 	height: 500px;
+}
+
+.heading {
+  padding: 0px;
+  margin: 15px;
+  font-size: 70px;
+}
+
+.container {
+  margin: 18px;
 }
