@@ -39,8 +39,9 @@ h1 {
 }
 
 .segment {
-	width: 500px;
-	height: 500px;
+	width: 227px;
+	height: 227px;
+	margin: 20px;
 }
 
 .heading {
@@ -51,4 +52,9 @@ h1 {
 
 .container {
   margin: 18px;
+	height: 218px;
+}
+
+.buttons {
+	margin-top: 50px;
 }
