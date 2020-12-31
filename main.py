@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
 		if episode_count % reward_update_episode_count == 0:
 			# train the reward predictor
-			rd_train = random_data()
+			rd_train = csv_data()
 			reward.train.train(data=rd_train, batch_size=reward_pred_batch_size,
 							   device=None, lr=3e-4, save=False, path=reward_model_save_path)
 

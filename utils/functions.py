@@ -5,6 +5,7 @@ import numpy as np
 import collections
 import json
 import pickle
+import pandas as pd
 
 import torch
 from models.reward.dataset import RewardDataset
@@ -27,6 +28,14 @@ def read_json(path='./data/test.json'):
         data = json.loads(j.read())
 
     return data
+
+
+def read_csv(path='./data/target.csv'):
+    try:
+        df = pd.read_csv(path, names=['episode_1', 'episode_2', 'target'])
+        return df
+    except:
+        return None
 
 
 def read_txt(path='./data/keys.txt'):
@@ -85,34 +94,25 @@ def save_json(data, path):
         json.dump(data, fp, indent=4)
 
 
-def unpickle(path='./data/test.pickle'):
-    with open(path, 'rb') as fin:
-        data = pickle.load(fin)
-    return data
+def select_data_from_csv(path):
+    df = read_csv()
+    rand_row = df.sample()
+    return rand_row
 
 
-def select_random_data(path):
-    files = [f for f in listdir(path) if isfile(join(path, f))]
-    rand_file_names = random.sample(files, 2)
-    values = list()
+def csv_data(path='./data/reward/'):
+    values = select_data_from_csv(path)
+    if values is None:
+        raise "target.csv is empty!"
 
-    for file_name in rand_file_names:
-        values.extend(read_json(path + file_name))
+    ep_1_name, ep_2_name, target  = values
 
-    return values
-
-
-def random_data(path='./data/reward/'):
-    episodes_data = select_random_data(path)
-
-    episode_1, episode_2 = episodes_data
+    pickle_path = './data/reward/'
+    episode_1, episode_2 = unpickle(pickle_path + ep_1_name), unpickle(pickle_path + ep_2_name)
     images_1, images_2 = episode_1['images'], episode_2['images']
 
     del episode_1['images']
     del episode_2['images']
-
-    # TODO:
-    target = None
 
     rd = RewardDataset(images_1, images_2, (episode_1, episode_2), target)
     return rd
