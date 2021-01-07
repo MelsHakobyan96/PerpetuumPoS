@@ -7,6 +7,8 @@ import torch
 import numpy as np
 import imageio
 import csv
+import os
+
 
 def submit(form):
     if form.get("btn1"):
@@ -53,6 +55,10 @@ def random_data(path='./data/reward/'):
 def make_video(images, name):
     # have a folder of output where output files could be stored.
     write_to = '{}.mp4'.format(name)
+
+    if os.path.exists(write_to):
+        os.remove(write_to)
+
     writer = imageio.get_writer(write_to, format='mp4', mode='I', fps=30)
 
     for im in images:
@@ -65,7 +71,8 @@ def convert_episodes(data, path='./ui/static/videos/'):
         name = 'episode_' + str(i)
         make_video(data[name], path + name)
 
+
 def save_csv(row, path='./data/target.csv'):
-    with open(path,'a', newline='') as f:
-          writer = csv.writer(f)
-          writer.writerow(row)
+    with open(path, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(row)
