@@ -1,6 +1,6 @@
 import random
 import pickle
-from os import listdir
+from os import listdir, walk, path
 from os.path import isfile, join
 from cv2 import VideoWriter, VideoWriter_fourcc
 import torch
@@ -66,7 +66,7 @@ def make_video(images, name):
     writer.close()
 
 
-def convert_episodes(data, path='./ui/static/videos/'):
+def convert_episodes(data, path='./ui/src/static/videos/'):
     for i in range(1, 3):
         name = 'episode_' + str(i)
         make_video(data[name], path + name)
@@ -76,3 +76,15 @@ def save_csv(row, path='./data/target.csv'):
     with open(path, 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(row)
+
+
+def extra_files(path='./ui/src/static/videos/'):
+    extras = list()
+
+    for dirname, dirs, files in walk(path):
+        for filename in files:
+            filename = join(dirname, filename)
+            if isfile(filename):
+                extras.append(filename)
+
+    return extras
