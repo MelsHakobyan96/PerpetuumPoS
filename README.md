@@ -1,12 +1,6 @@
 ## Perpetuum Motors
 
 
-Installation
-Prerequisites:
-```sh
-Python 3.8, virtualenv, pip installed
-python3 -m virtualenv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+simulation based self-driving agent is on dev branch
+highway lane keeping project is on self-driving branch
 
